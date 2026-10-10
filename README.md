@@ -12,6 +12,21 @@ each model's speed limit.
 The report with the results and timings is `report.html` (published as an artifact); the raw data is
 in `results.jsonl`, `ceiling.json`, `summary.json` and `cost-ledger.json`.
 
+## Play it
+
+```bash
+python3 play.py                              # you play: ←/→ or A/D move, SPACE fires, P pauses, Q quits
+python3 play.py --speed 0.3                  # more time to think: 30% of full speed
+python3 play.py --player autopilot           # watch the coded autopilot win
+python3 play.py --player jev --speed 0.1     # watch Jev play live (paid, a fraction of a cent a game)
+python3 play.py --player gemma --speed 0.3   # watch the local Gemma 4 E2B (Ollama)
+```
+
+Clear all 18 aliens (`W`) before they reach your cannon (`A`), and dodge the bombs (`!`). You have one
+shot (`|`) in flight at a time and three lives. When a model plays, the game keeps running while it
+thinks and its move lands when the answer arrives. Watching Jev or Decision-1 needs an OpenRouter key
+in `.config/openrouter.env` (`OPENROUTER_API_KEY=...`, git-ignored) and counts against the cost ledger.
+
 ## Run it
 
 ```bash
