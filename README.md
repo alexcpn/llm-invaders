@@ -12,22 +12,45 @@ each model's speed limit.
 The report with the results and timings is `report.html` (published as an artifact); the raw data is
 in `results.jsonl`, `ceiling.json`, `summary.json` and `cost-ledger.json`.
 
-## Play it
+## Quick start
+
+Python 3 only, no installs. In a terminal of at least 40 x 23:
 
 ```bash
 python3 play.py                              # you play: ←/→ or A/D move, SPACE fires, P pauses, Q quits
 python3 play.py --speed 0.3                  # more time to think: 30% of full speed
-python3 play.py --player autopilot           # watch the coded autopilot win
-python3 play.py --player jev --speed 0.1     # watch Jev play live (paid, a fraction of a cent a game)
-python3 play.py --player gemma --speed 0.3   # watch the local Gemma 4 E2B (Ollama)
+python3 play.py --seed 5                     # a different game
+python3 play.py --player autopilot           # watch the coded autopilot win (free)
 ```
 
 Clear all 18 aliens (`W`) before they reach your cannon (`A`), and dodge the bombs (`!`). You have one
 shot (`|`) in flight at a time and three lives. When a model plays, the game keeps running while it
-thinks and its move lands when the answer arrives. Watching Jev or Decision-1 needs an OpenRouter key
-in `.config/openrouter.env` (`OPENROUTER_API_KEY=...`, git-ignored) and counts against the cost ledger.
+thinks and its move lands when the answer arrives, the same as in the experiment.
 
-## Run it
+**Watch a System-1 decision model (Jev or Microsoft-Decision-1).** These run in the cloud through
+OpenRouter and cost a fraction of a cent per game, counted in `cost-ledger.json`. Put your key in
+`.config/openrouter.env` (git-ignored) once:
+
+```bash
+mkdir -p .config && printf 'OPENROUTER_API_KEY=%s\n' 'sk-or-...' > .config/openrouter.env
+python3 play.py --player jev --speed 0.1         # about where Jev can sometimes win
+python3 play.py --player decision-1 --speed 0.1
+```
+
+**Watch the local model (Gemma 4 E2B on your own GPU, free).** It runs through [Ollama](https://ollama.com):
+
+```bash
+curl -fsSL https://ollama.com/install.sh | sh    # install Ollama (Linux; macOS and Windows: download from ollama.com)
+ollama --version                                 # Gemma 4 needs a recent Ollama (tested with 0.40.2)
+ollama pull gemma4:e2b                           # about 4.6 GB; fits a 6 GB GPU
+python3 play.py --player gemma --speed 0.3
+```
+
+The game asks Ollama at `http://localhost:11434` (its default) with thinking switched off, so each move
+takes about 0.2-0.3 s on an RTX 3060 laptop GPU. If Gemma answers slowly, check that the whole model is
+on the GPU (`ollama ps` should say `100% GPU`) and stop other loaded models with `ollama stop <name>`.
+
+## Run the experiment
 
 ```bash
 python3 -m unittest -v test_invaders                       # engine, harness, budget guard
