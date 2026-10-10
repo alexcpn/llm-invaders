@@ -1,0 +1,112 @@
+{
+ "seeds": 20,
+ "autopilot_by_interval": [
+  {
+   "game_s_per_decision": 0.05,
+   "wins": 20,
+   "games": 20,
+   "kills_mean": 18.0
+  },
+  {
+   "game_s_per_decision": 0.06,
+   "wins": 20,
+   "games": 20,
+   "kills_mean": 18.0
+  },
+  {
+   "game_s_per_decision": 0.08,
+   "wins": 20,
+   "games": 20,
+   "kills_mean": 18.0
+  },
+  {
+   "game_s_per_decision": 0.09,
+   "wins": 20,
+   "games": 20,
+   "kills_mean": 18.0
+  },
+  {
+   "game_s_per_decision": 0.1,
+   "wins": 17,
+   "games": 20,
+   "kills_mean": 17.7
+  },
+  {
+   "game_s_per_decision": 0.11,
+   "wins": 13,
+   "games": 20,
+   "kills_mean": 17.4
+  },
+  {
+   "game_s_per_decision": 0.12,
+   "wins": 7,
+   "games": 20,
+   "kills_mean": 16.75
+  },
+  {
+   "game_s_per_decision": 0.13,
+   "wins": 0,
+   "games": 20,
+   "kills_mean": 14.65
+  },
+  {
+   "game_s_per_decision": 0.15,
+   "wins": 1,
+   "games": 20,
+   "kills_mean": 13.3
+  },
+  {
+   "game_s_per_decision": 0.18,
+   "wins": 0,
+   "games": 20,
+   "kills_mean": 11.35
+  },
+  {
+   "game_s_per_decision": 0.2,
+   "wins": 0,
+   "games": 20,
+   "kills_mean": 10.3
+  },
+  {
+   "game_s_per_decision": 0.25,
+   "wins": 0,
+   "games": 20,
+   "kills_mean": 7.7
+  },
+  {
+   "game_s_per_decision": 0.3,
+   "wins": 0,
+   "games": 20,
+   "kills_mean": 5.65
+  },
+  {
+   "game_s_per_decision": 0.4,
+   "wins": 0,
+   "games": 20,
+   "kills_mean": 5.0
+  },
+  {
+   "game_s_per_decision": 0.5,
+   "wins": 0,
+   "games": 20,
+   "kills_mean": 1.65
+  },
+  {
+   "game_s_per_decision": 0.7,
+   "wins": 0,
+   "games": 20,
+   "kills_mean": 0.4
+  },
+  {
+   "game_s_per_decision": 1.0,
+   "wins": 0,
+   "games": 20,
+   "kills_mean": 0.0
+  }
+ ],
+ "baselines_wins_of_20": {
+  "always fire": 0,
+  "random": 0,
+  "autopilot (0.05 s reflex)": 20
+ }
+}

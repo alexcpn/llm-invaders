@@ -1,0 +1,176 @@
+<title>Invaders Speed Limit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: one reading column; the answer first, then the two charts that carry it, then the tables. */
+:root {{
+  --bg: #f2f5f4; --panel: #ffffff; --ink: #15201e; --muted: #56655f; --line: #d3dbd8;
+  --accent: #b86f08;
+  --jev: #0e7a84; --d1: #3a57d0; --gemma: #b0307f; --auto: #6b7774;
+  --display: "Chakra Petch", "Arial Narrow", system-ui, sans-serif;
+  --body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}}
+@media (prefers-color-scheme: dark) {{ :root:not([data-theme="light"]) {{
+  --bg: #0f1514; --panel: #161e1c; --ink: #e2eae7; --muted: #94a49f; --line: #27322f;
+  --accent: #e3a43c; --jev: #35b8c2; --d1: #7f97f5; --gemma: #e070b6; --auto: #9aa7a3; color-scheme: dark;
+}} }}
+:root[data-theme="dark"] {{
+  --bg: #0f1514; --panel: #161e1c; --ink: #e2eae7; --muted: #94a49f; --line: #27322f;
+  --accent: #e3a43c; --jev: #35b8c2; --d1: #7f97f5; --gemma: #e070b6; --auto: #9aa7a3; color-scheme: dark;
+}}
+body {{ background: var(--bg); color: var(--ink); font: 400 16px/1.6 var(--body); }}
+.wrap {{ max-width: 780px; margin: 0 auto; padding-inline: 20px; padding-block: 40px 64px; display: grid; gap: 40px; }}
+.eyebrow {{ font: 500 12px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }}
+h1 {{ font: 600 clamp(30px, 6vw, 44px)/1.08 var(--display); margin: 10px 0 14px; text-wrap: balance; letter-spacing: .01em; }}
+h2 {{ font: 600 22px/1.2 var(--display); margin: 0 0 10px; text-wrap: balance; letter-spacing: .01em; }}
+p {{ margin: 0; max-width: 66ch; }}
+.lede {{ font-size: 19px; line-height: 1.5; }}
+.meta {{ font: 400 13px/1.5 var(--mono); color: var(--muted); margin-top: 14px; }}
+section {{ display: grid; gap: 12px; min-width: 0; }}
+.findings {{ display: grid; gap: 10px; padding: 0; margin: 0; list-style: none; }}
+.findings li {{ padding-left: 18px; position: relative; max-width: 66ch; }}
+.findings li::before {{ content: ""; position: absolute; left: 0; top: .62em; width: 8px; height: 8px; background: var(--accent); }}
+figure {{ margin: 0; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 16px 12px 8px; overflow-x: auto; }}
+figure svg {{ width: 100%; min-width: 520px; height: auto; display: block; }}
+figcaption {{ font-size: 14px; color: var(--muted); padding: 6px 6px 8px; max-width: 70ch; }}
+.legend {{ display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 14px; padding: 0 6px 10px; }}
+.legend span {{ display: inline-flex; align-items: center; gap: 7px; }}
+.key {{ display: inline-block; width: 14px; height: 3px; border-radius: 2px; vertical-align: middle; margin-right: 8px; }}
+.key.s-jev {{ background: var(--jev); }} .key.s-d1 {{ background: var(--d1); }} .key.s-gemma {{ background: var(--gemma); }}
+.key.s-auto {{ background: var(--auto); }} .key.dash {{ background: none; border-top: 2px dashed var(--muted); height: 0; }}
+svg .grid {{ stroke: var(--line); stroke-width: 1; }}
+svg .tick {{ fill: var(--muted); font: 400 12px var(--mono); }}
+svg .axis {{ fill: var(--muted); font: 500 12px var(--body); }}
+svg .line {{ fill: none; stroke-width: 2.4; stroke-linejoin: round; }}
+svg .dot {{ stroke: var(--panel); stroke-width: 2; }}
+svg .bar.s-jev {{ fill: var(--jev); }} svg .bar.s-d1 {{ fill: var(--d1); }} svg .bar.s-gemma {{ fill: var(--gemma); }}
+svg rect.bar {{ stroke: none; }}
+svg .ceil {{ stroke-width: 1.4; stroke-dasharray: 5 5; fill: none; opacity: .8; }}
+svg .s-jev {{ stroke: var(--jev); }} svg .dot.s-jev {{ fill: var(--jev); }}
+svg .s-d1 {{ stroke: var(--d1); }} svg .dot.s-d1 {{ fill: var(--d1); }}
+svg .s-gemma {{ stroke: var(--gemma); }} svg .dot.s-gemma {{ fill: var(--gemma); }}
+svg .s-auto {{ stroke: var(--auto); }} svg .line.s-auto {{ stroke-dasharray: 2 4; }} svg .dot.s-auto {{ fill: var(--auto); }}
+.table {{ overflow-x: auto; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); }}
+table {{ border-collapse: collapse; width: 100%; font-size: 14px; font-variant-numeric: tabular-nums; }}
+th, td {{ padding: 9px 12px; text-align: right; border-bottom: 1px solid var(--line); white-space: nowrap; }}
+thead th {{ font: 500 11px/1.3 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }}
+th[scope="row"], td:first-child, thead th:first-child {{ text-align: left; }}
+th[scope="row"] {{ font-weight: 600; }}
+th[scope="row"] small {{ display: block; font-weight: 400; color: var(--muted); font-size: 12px; }}
+tbody tr:last-child th, tbody tr:last-child td {{ border-bottom: 0; }}
+details {{ border: 1px solid var(--line); border-radius: 6px; background: var(--panel); }}
+summary {{ cursor: pointer; padding: 12px 14px; font-weight: 600; }}
+summary:focus-visible, a:focus-visible {{ outline: 2px solid var(--accent); outline-offset: 2px; }}
+details .table {{ border: 0; border-top: 1px solid var(--line); border-radius: 0; }}
+.method {{ display: grid; gap: 10px; }}
+code {{ font: 400 .9em var(--mono); }}
+a {{ color: var(--accent); }}
+.sources {{ font-size: 14px; display: grid; gap: 6px; padding-left: 18px; margin: 0; }}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">LLM speed experiment · {generated}</div>
+    <h1>How fast can a decision model play Space Invaders?</h1>
+    <p class="lede">{headline}</p>
+    <p class="meta">{games} games · latency charged in game time · total cost {spent} of a $2.00 budget</p>
+  </header>
+
+  <section>
+    <h2>Findings</h2>
+    <ul class="findings">
+      <li>{finding_1}</li>
+      <li>{finding_2}</li>
+      <li>{finding_3}</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Decision quality on 200 game situations</h2>
+    <figure>
+      <div class="legend">
+        <span><i class="key s-jev"></i>Jev</span><span><i class="key s-d1"></i>Microsoft-Decision-1</span>
+        <span><i class="key s-gemma"></i>Gemma 4 E2B, local</span>
+      </div>
+      {chart_quality}
+      <figcaption>The same 200 situations from real play were put to each model once: 50 with the cannon lined up under an
+      alien, 100 with the nearest alien column to one side, 50 with a bomb about to land. A move counts as good when it
+      is a sound move for that situation (fire, move toward the column, step aside).</figcaption>
+    </figure>
+    <div class="table"><table>
+      <thead><tr><th>Player</th><th>Good moves</th><th>Median latency</th><th>p90 latency</th><th>Fastest call</th><th>Moves it picked</th></tr></thead>
+      <tbody>{qrows}</tbody>
+    </table></div>
+    <p class="meta">Latency measured one call at a time over 30 calls, from a home connection in India for the cloud models.</p>
+  </section>
+
+  <section>
+    <h2>Win rate against game speed</h2>
+    <figure>
+      <div class="legend">
+        <span><i class="key s-jev"></i>Jev</span><span><i class="key s-d1"></i>Microsoft-Decision-1</span>
+        <span><i class="key s-gemma"></i>Gemma 4 E2B, local</span><span><i class="key s-auto"></i>coded autopilot</span>
+        <span><i class="key dash"></i>best speed its latency allows</span>
+      </div>
+      {chart_speed}
+      <figcaption>Each point is 3 games at one speed. The dashed line for each model is the speed at which a perfect
+      player with that model's median latency would still win half its games; the gap to its curve is decision quality.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>Decision quality: win rate against game time per decision</h2>
+    <figure>
+      {chart_interval}
+      <figcaption>The dotted grey curve is a coded autopilot forced to decide at a fixed interval (20 games per point):
+      it wins half its games at {d50} game seconds per decision. A model point to the left of that curve that still loses
+      is losing on judgement, not speed.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>Players</h2>
+    <div class="table"><table>
+      <thead><tr><th>Player</th><th>Median latency</th><th>p90 latency</th><th>Fastest win</th>
+      <th>Best its latency allows</th><th>Games won</th><th>Decisions</th><th>Cost per decision</th><th>Total cost</th></tr></thead>
+      <tbody>{rows}</tbody>
+    </table></div>
+    <p class="meta">"Fastest win" is the fastest speed at which the model won any game, with its record there. No model won 2 of 3 games at any
+    speed tested. For reference, at full speed the coded autopilot won {auto}/20 games, holding fire won {fire}/20 and random play won {rnd}/20.</p>
+    <details>
+      <summary>Every speed tested</summary>
+      <div class="table"><table>
+        <thead><tr><th>Player</th><th>Speed</th><th>Won</th><th>Aliens shot</th><th>Game s per decision</th><th>Decisions</th></tr></thead>
+        <tbody>{detail}</tbody>
+      </table></div>
+    </details>
+  </section>
+
+  <section class="method">
+    <h2>How it was measured</h2>
+    <p>The game is a small, deterministic Space Invaders: 18 aliens march sideways, drop a row at each edge, speed up as
+    they thin out and drop bombs. The cannon moves one column per action and has one shot in flight. Clearing the wave
+    wins; the aliens landing or losing three lives loses.</p>
+    <p>Each decision, the game freezes, the model gets the board as a short text description and picks one action:
+    left, right, fire or wait. The game then runs on for the model's measured latency times the game speed before the
+    action lands, so a slow model acts on a stale view, as it would in real play, while results stay reproducible. This
+    follows the latency-controlled protocol used by OmniGameArena.</p>
+    <p>Jev and Microsoft-Decision-1 are System-1 decision models: they return a probability for each fixed option in one
+    pass instead of writing text, called through OpenRouter's <code>/api/alpha/decisions</code> endpoint; the most likely action is
+    played. Gemma 4 E2B runs on the laptop's RTX 3060 through Ollama with thinking switched off and a strict JSON answer.
+    Every paid call was logged against a hard $1.90 stop.</p>
+  </section>
+
+  <section>
+    <h2>Earlier work</h2>
+    <ul class="sources">
+      <li><a href="https://github.com/13rac1/ufa-2026-09-spaceinvaders">UFA Space Invaders bake-off (Sep 2026)</a>: in real time, Claude Haiku 4.5 and a 27B Qwen scored below just holding FIRE.</li>
+      <li><a href="https://arxiv.org/abs/2408.15950">Atari-GPT</a>: multimodal models as Atari policies, acting every 8 frames, scored well below an RL agent.</li>
+      <li><a href="https://arxiv.org/abs/2506.03610">Orak</a>: every model scored 0 on hard real-time StarCraft.</li>
+      <li><a href="https://arxiv.org/abs/2505.19481">Win Fast or Lose Slow (LSB)</a>: in Street Fighter, 20% lower latency consistently beats a slower agent.</li>
+      <li><a href="https://arxiv.org/abs/2606.09826">OmniGameArena</a>: the latency-controlled real-time protocol used here.</li>
+      <li><a href="https://commandline.microsoft.com/microsoft-decision-1-model-foundry/">Microsoft-Decision-1</a> and <a href="https://openrouter.ai/~typesafe/jev-latest">Jev</a>: the decision models tested.</li>
+    </ul>
+  </section>
+</div>

@@ -1,0 +1,95 @@
+[
+ {
+  "player": "jev",
+  "label": "Jev (TypeSafe)",
+  "situations": 200,
+  "good_moves": 154,
+  "by_kind": {
+   "approach": {
+    "good": 81,
+    "of": 100
+   },
+   "dodge": {
+    "good": 36,
+    "of": 50
+   },
+   "aligned": {
+    "good": 37,
+    "of": 50
+   }
+  },
+  "picks": {
+   "wait": 35,
+   "left": 62,
+   "right": 81,
+   "fire": 22
+  },
+  "errors": 0,
+  "latency_calls": 30,
+  "latency_median_s": 0.494,
+  "latency_p90_s": 0.565,
+  "latency_min_s": 0.427,
+  "measured_at": "2026-10-11 00:07"
+ },
+ {
+  "player": "decision-1",
+  "label": "Microsoft-Decision-1",
+  "situations": 200,
+  "good_moves": 56,
+  "by_kind": {
+   "approach": {
+    "good": 6,
+    "of": 100
+   },
+   "dodge": {
+    "good": 0,
+    "of": 50
+   },
+   "aligned": {
+    "good": 50,
+    "of": 50
+   }
+  },
+  "picks": {
+   "wait": 132,
+   "fire": 62,
+   "right": 3,
+   "left": 3
+  },
+  "errors": 0,
+  "latency_calls": 30,
+  "latency_median_s": 0.581,
+  "latency_p90_s": 0.626,
+  "latency_min_s": 0.536,
+  "measured_at": "2026-10-11 00:07"
+ },
+ {
+  "player": "gemma",
+  "label": "Gemma 4 E2B (local GPU)",
+  "situations": 200,
+  "good_moves": 50,
+  "by_kind": {
+   "approach": {
+    "good": 0,
+    "of": 100
+   },
+   "dodge": {
+    "good": 0,
+    "of": 50
+   },
+   "aligned": {
+    "good": 50,
+    "of": 50
+   }
+  },
+  "picks": {
+   "fire": 200
+  },
+  "errors": 0,
+  "latency_calls": 30,
+  "latency_median_s": 0.31,
+  "latency_p90_s": 0.405,
+  "latency_min_s": 0.268,
+  "measured_at": "2026-10-11 00:22"
+ }
+]

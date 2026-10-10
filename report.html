@@ -1,0 +1,176 @@
+<title>Invaders Speed Limit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: one reading column; the answer first, then the two charts that carry it, then the tables. */
+:root {
+  --bg: #f2f5f4; --panel: #ffffff; --ink: #15201e; --muted: #56655f; --line: #d3dbd8;
+  --accent: #b86f08;
+  --jev: #0e7a84; --d1: #3a57d0; --gemma: #b0307f; --auto: #6b7774;
+  --display: "Chakra Petch", "Arial Narrow", system-ui, sans-serif;
+  --body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0f1514; --panel: #161e1c; --ink: #e2eae7; --muted: #94a49f; --line: #27322f;
+  --accent: #e3a43c; --jev: #35b8c2; --d1: #7f97f5; --gemma: #e070b6; --auto: #9aa7a3; color-scheme: dark;
+} }
+:root[data-theme="dark"] {
+  --bg: #0f1514; --panel: #161e1c; --ink: #e2eae7; --muted: #94a49f; --line: #27322f;
+  --accent: #e3a43c; --jev: #35b8c2; --d1: #7f97f5; --gemma: #e070b6; --auto: #9aa7a3; color-scheme: dark;
+}
+body { background: var(--bg); color: var(--ink); font: 400 16px/1.6 var(--body); }
+.wrap { max-width: 780px; margin: 0 auto; padding-inline: 20px; padding-block: 40px 64px; display: grid; gap: 40px; }
+.eyebrow { font: 500 12px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
+h1 { font: 600 clamp(30px, 6vw, 44px)/1.08 var(--display); margin: 10px 0 14px; text-wrap: balance; letter-spacing: .01em; }
+h2 { font: 600 22px/1.2 var(--display); margin: 0 0 10px; text-wrap: balance; letter-spacing: .01em; }
+p { margin: 0; max-width: 66ch; }
+.lede { font-size: 19px; line-height: 1.5; }
+.meta { font: 400 13px/1.5 var(--mono); color: var(--muted); margin-top: 14px; }
+section { display: grid; gap: 12px; min-width: 0; }
+.findings { display: grid; gap: 10px; padding: 0; margin: 0; list-style: none; }
+.findings li { padding-left: 18px; position: relative; max-width: 66ch; }
+.findings li::before { content: ""; position: absolute; left: 0; top: .62em; width: 8px; height: 8px; background: var(--accent); }
+figure { margin: 0; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 16px 12px 8px; overflow-x: auto; }
+figure svg { width: 100%; min-width: 520px; height: auto; display: block; }
+figcaption { font-size: 14px; color: var(--muted); padding: 6px 6px 8px; max-width: 70ch; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 14px; padding: 0 6px 10px; }
+.legend span { display: inline-flex; align-items: center; gap: 7px; }
+.key { display: inline-block; width: 14px; height: 3px; border-radius: 2px; vertical-align: middle; margin-right: 8px; }
+.key.s-jev { background: var(--jev); } .key.s-d1 { background: var(--d1); } .key.s-gemma { background: var(--gemma); }
+.key.s-auto { background: var(--auto); } .key.dash { background: none; border-top: 2px dashed var(--muted); height: 0; }
+svg .grid { stroke: var(--line); stroke-width: 1; }
+svg .tick { fill: var(--muted); font: 400 12px var(--mono); }
+svg .axis { fill: var(--muted); font: 500 12px var(--body); }
+svg .line { fill: none; stroke-width: 2.4; stroke-linejoin: round; }
+svg .dot { stroke: var(--panel); stroke-width: 2; }
+svg .bar.s-jev { fill: var(--jev); } svg .bar.s-d1 { fill: var(--d1); } svg .bar.s-gemma { fill: var(--gemma); }
+svg rect.bar { stroke: none; }
+svg .ceil { stroke-width: 1.4; stroke-dasharray: 5 5; fill: none; opacity: .8; }
+svg .s-jev { stroke: var(--jev); } svg .dot.s-jev { fill: var(--jev); }
+svg .s-d1 { stroke: var(--d1); } svg .dot.s-d1 { fill: var(--d1); }
+svg .s-gemma { stroke: var(--gemma); } svg .dot.s-gemma { fill: var(--gemma); }
+svg .s-auto { stroke: var(--auto); } svg .line.s-auto { stroke-dasharray: 2 4; } svg .dot.s-auto { fill: var(--auto); }
+.table { overflow-x: auto; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); }
+table { border-collapse: collapse; width: 100%; font-size: 14px; font-variant-numeric: tabular-nums; }
+th, td { padding: 9px 12px; text-align: right; border-bottom: 1px solid var(--line); white-space: nowrap; }
+thead th { font: 500 11px/1.3 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+th[scope="row"], td:first-child, thead th:first-child { text-align: left; }
+th[scope="row"] { font-weight: 600; }
+th[scope="row"] small { display: block; font-weight: 400; color: var(--muted); font-size: 12px; }
+tbody tr:last-child th, tbody tr:last-child td { border-bottom: 0; }
+details { border: 1px solid var(--line); border-radius: 6px; background: var(--panel); }
+summary { cursor: pointer; padding: 12px 14px; font-weight: 600; }
+summary:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+details .table { border: 0; border-top: 1px solid var(--line); border-radius: 0; }
+.method { display: grid; gap: 10px; }
+code { font: 400 .9em var(--mono); }
+a { color: var(--accent); }
+.sources { font-size: 14px; display: grid; gap: 6px; padding-left: 18px; margin: 0; }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">LLM speed experiment · 11 October 2026, 00:23</div>
+    <h1>How fast can a decision model play Space Invaders?</h1>
+    <p class="lede">No model came close to arcade speed. Jev, the better of two System-1 decision models, won 1 game in 3 at 10% and at 15% of full speed and none faster; Microsoft-Decision-1 and a local Gemma 4 E2B never won at any speed, because they hardly move the cannon.</p>
+    <p class="meta">26 games · latency charged in game time · total cost $0.213 of a $2.00 budget</p>
+  </header>
+
+  <section>
+    <h2>Findings</h2>
+    <ul class="findings">
+      <li><strong>Speed caps play even with perfect judgement.</strong> A coded player has to decide every 0.115 game seconds to win half its games. At Jev's 0.49 s, Microsoft-Decision-1's 0.58 s and Gemma's 0.21 s per decision, that caps the game at about 23%, 20% and 54% of full speed. Full speed needs a decision in about 0.1 s of real time, roughly five times faster than the fastest System-1 model over the network.</li>
+      <li><strong>Inside that cap, judgement decided the games.</strong> On 200 situations from real play, Jev chose a sound move 77% of the time; it lost games by running out of lives, dodging 36 of 50 bombs. Microsoft-Decision-1 chose well 28% of the time: it waited in 132 of 200 situations and never dodged. Gemma 4 E2B fired in all 200, so it only hit aliens that passed over it, 12 of 18 in every game.</li>
+      <li><strong>It was cheap.</strong> 14,238 model decisions over 26 games, plus about 700 quality and latency questions, cost $0.21 in total ($0.17 Jev, $0.04 Microsoft-Decision-1, local Gemma free): about $0.00002 per Jev decision and $0.000007 per Decision-1 decision. Cost is not what stops decision models playing in real time; latency and judgement are.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Decision quality on 200 game situations</h2>
+    <figure>
+      <div class="legend">
+        <span><i class="key s-jev"></i>Jev</span><span><i class="key s-d1"></i>Microsoft-Decision-1</span>
+        <span><i class="key s-gemma"></i>Gemma 4 E2B, local</span>
+      </div>
+      <svg viewBox="0 0 720 286" role="img" aria-label="Good moves by situation"><line class="grid" x1="190.0" x2="190.0" y1="12" y2="256"/><text class="tick" x="190.0" y="274" text-anchor="middle">0%</text><line class="grid" x1="305.0" x2="305.0" y1="12" y2="256"/><text class="tick" x="305.0" y="274" text-anchor="middle">25%</text><line class="grid" x1="420.0" x2="420.0" y1="12" y2="256"/><text class="tick" x="420.0" y="274" text-anchor="middle">50%</text><line class="grid" x1="535.0" x2="535.0" y1="12" y2="256"/><text class="tick" x="535.0" y="274" text-anchor="middle">75%</text><line class="grid" x1="650.0" x2="650.0" y1="12" y2="256"/><text class="tick" x="650.0" y="274" text-anchor="middle">100%</text><text class="axis" x="8" y="32">lined up under an alien</text><rect class="s-jev bar" x="190" y="20" width="340.4" height="14"><title>Jev (TypeSafe): 37/50 good</title></rect><text class="tick" x="536.4" y="31">37/50</text><rect class="s-d1 bar" x="190" y="38" width="460.0" height="14"><title>Microsoft-Decision-1: 50/50 good</title></rect><text class="tick" x="656.0" y="49">50/50</text><rect class="s-gemma bar" x="190" y="56" width="460.0" height="14"><title>Gemma 4 E2B: 50/50 good</title></rect><text class="tick" x="656.0" y="67">50/50</text><text class="axis" x="8" y="108">alien column to one side</text><rect class="s-jev bar" x="190" y="96" width="372.6" height="14"><title>Jev (TypeSafe): 81/100 good</title></rect><text class="tick" x="568.6" y="107">81/100</text><rect class="s-d1 bar" x="190" y="114" width="27.6" height="14"><title>Microsoft-Decision-1: 6/100 good</title></rect><text class="tick" x="223.6" y="125">6/100</text><rect class="s-gemma bar" x="190" y="132" width="1.5" height="14"><title>Gemma 4 E2B: 0/100 good</title></rect><text class="tick" x="196.0" y="143">0/100</text><text class="axis" x="8" y="184">bomb about to land</text><rect class="s-jev bar" x="190" y="172" width="331.2" height="14"><title>Jev (TypeSafe): 36/50 good</title></rect><text class="tick" x="527.2" y="183">36/50</text><rect class="s-d1 bar" x="190" y="190" width="1.5" height="14"><title>Microsoft-Decision-1: 0/50 good</title></rect><text class="tick" x="196.0" y="201">0/50</text><rect class="s-gemma bar" x="190" y="208" width="1.5" height="14"><title>Gemma 4 E2B: 0/50 good</title></rect><text class="tick" x="196.0" y="219">0/50</text></svg>
+      <figcaption>The same 200 situations from real play were put to each model once: 50 with the cannon lined up under an
+      alien, 100 with the nearest alien column to one side, 50 with a bomb about to land. A move counts as good when it
+      is a sound move for that situation (fire, move toward the column, step aside).</figcaption>
+    </figure>
+    <div class="table"><table>
+      <thead><tr><th>Player</th><th>Good moves</th><th>Median latency</th><th>p90 latency</th><th>Fastest call</th><th>Moves it picked</th></tr></thead>
+      <tbody><tr><th scope="row"><span class="key s-jev"></span>Jev (TypeSafe)</th><td>154/200</td><td>0.49 s</td><td>0.56 s</td><td>0.43 s</td><td>right 81, left 62, wait 35, fire 22</td></tr><tr><th scope="row"><span class="key s-d1"></span>Microsoft-Decision-1</th><td>56/200</td><td>0.58 s</td><td>0.63 s</td><td>0.54 s</td><td>wait 132, fire 62, right 3, left 3</td></tr><tr><th scope="row"><span class="key s-gemma"></span>Gemma 4 E2B</th><td>50/200</td><td>0.31 s</td><td>0.41 s</td><td>0.27 s</td><td>fire 200</td></tr></tbody>
+    </table></div>
+    <p class="meta">Latency measured one call at a time over 30 calls, from a home connection in India for the cloud models.</p>
+  </section>
+
+  <section>
+    <h2>Win rate against game speed</h2>
+    <figure>
+      <div class="legend">
+        <span><i class="key s-jev"></i>Jev</span><span><i class="key s-d1"></i>Microsoft-Decision-1</span>
+        <span><i class="key s-gemma"></i>Gemma 4 E2B, local</span><span><i class="key s-auto"></i>coded autopilot</span>
+        <span><i class="key dash"></i>best speed its latency allows</span>
+      </div>
+      <svg viewBox="0 0 720 360" role="img" aria-label="Win rate against game speed"><line class="grid" x1="64" x2="696" y1="308.0" y2="308.0"/><text class="tick" x="56" y="312.0" text-anchor="end">0%</text><line class="grid" x1="64" x2="696" y1="237.0" y2="237.0"/><text class="tick" x="56" y="241.0" text-anchor="end">25%</text><line class="grid" x1="64" x2="696" y1="166.0" y2="166.0"/><text class="tick" x="56" y="170.0" text-anchor="end">50%</text><line class="grid" x1="64" x2="696" y1="95.0" y2="95.0"/><text class="tick" x="56" y="99.0" text-anchor="end">75%</text><line class="grid" x1="64" x2="696" y1="24.0" y2="24.0"/><text class="tick" x="56" y="28.0" text-anchor="end">100%</text><line class="grid" x1="64.0" x2="64.0" y1="24" y2="308"/><text class="tick" x="64.0" y="326" text-anchor="middle">2%</text><line class="grid" x1="212.0" x2="212.0" y1="24" y2="308"/><text class="tick" x="212.0" y="326" text-anchor="middle">5%</text><line class="grid" x1="324.0" x2="324.0" y1="24" y2="308"/><text class="tick" x="324.0" y="326" text-anchor="middle">10%</text><line class="grid" x1="436.0" x2="436.0" y1="24" y2="308"/><text class="tick" x="436.0" y="326" text-anchor="middle">20%</text><line class="grid" x1="584.0" x2="584.0" y1="24" y2="308"/><text class="tick" x="584.0" y="326" text-anchor="middle">50%</text><line class="grid" x1="696.0" x2="696.0" y1="24" y2="308"/><text class="tick" x="696.0" y="326" text-anchor="middle">100%</text><text class="axis" x="380" y="350" text-anchor="middle">game speed (100% = full arcade speed), log scale</text><text class="axis" x="16" y="166" text-anchor="middle" transform="rotate(-90 16 166)">games won</text><path class="s-jev line" d="M324.0,213.3 L389.5,213.3 L436.0,308.0 L501.5,308.0"/><circle class="s-jev dot" cx="324.0" cy="213.3" r="4.5"><title>Jev (TypeSafe): 1/3 wins at 10% speed</title></circle><circle class="s-jev dot" cx="389.5" cy="213.3" r="4.5"><title>Jev (TypeSafe): 1/3 wins at 15% speed</title></circle><circle class="s-jev dot" cx="436.0" cy="308.0" r="4.5"><title>Jev (TypeSafe): 0/3 wins at 20% speed</title></circle><circle class="s-jev dot" cx="501.5" cy="308.0" r="4.5"><title>Jev (TypeSafe): 0/3 wins at 30% speed</title></circle><line class="s-jev ceil" x1="462.0" x2="462.0" y1="24" y2="308"/><path class="s-d1 line" d="M324.0,308.0 L436.0,308.0 L501.5,308.0"/><circle class="s-d1 dot" cx="324.0" cy="308.0" r="4.5"><title>Microsoft-Decision-1: 0/1 wins at 10% speed</title></circle><circle class="s-d1 dot" cx="436.0" cy="308.0" r="4.5"><title>Microsoft-Decision-1: 0/3 wins at 20% speed</title></circle><circle class="s-d1 dot" cx="501.5" cy="308.0" r="4.5"><title>Microsoft-Decision-1: 0/3 wins at 30% speed</title></circle><line class="s-d1 ceil" x1="435.2" x2="435.2" y1="24" y2="308"/><path class="s-gemma line" d="M472.0,308.0 L584.0,308.0"/><circle class="s-gemma dot" cx="472.0" cy="308.0" r="4.5"><title>Gemma 4 E2B: 0/4 wins at 25% speed</title></circle><circle class="s-gemma dot" cx="584.0" cy="308.0" r="4.5"><title>Gemma 4 E2B: 0/3 wins at 50% speed</title></circle><line class="s-gemma ceil" x1="597.1" x2="597.1" y1="24" y2="308"/><circle class="s-auto dot" cx="696.0" cy="24.0" r="5"><title>Coded autopilot: 20/20 wins at full speed</title></circle></svg>
+      <figcaption>Each point is 3 games at one speed. The dashed line for each model is the speed at which a perfect
+      player with that model's median latency would still win half its games; the gap to its curve is decision quality.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>Decision quality: win rate against game time per decision</h2>
+    <figure>
+      <svg viewBox="0 0 720 360" role="img" aria-label="Win rate against game time per decision"><line class="grid" x1="64" x2="696" y1="308.0" y2="308.0"/><text class="tick" x="56" y="312.0" text-anchor="end">0%</text><line class="grid" x1="64" x2="696" y1="237.0" y2="237.0"/><text class="tick" x="56" y="241.0" text-anchor="end">25%</text><line class="grid" x1="64" x2="696" y1="166.0" y2="166.0"/><text class="tick" x="56" y="170.0" text-anchor="end">50%</text><line class="grid" x1="64" x2="696" y1="95.0" y2="95.0"/><text class="tick" x="56" y="99.0" text-anchor="end">75%</text><line class="grid" x1="64" x2="696" y1="24.0" y2="24.0"/><text class="tick" x="56" y="28.0" text-anchor="end">100%</text><line class="grid" x1="64.0" x2="64.0" y1="24" y2="308"/><text class="tick" x="64.0" y="326" text-anchor="middle">0.01 s</text><line class="grid" x1="159.1" x2="159.1" y1="24" y2="308"/><text class="tick" x="159.1" y="326" text-anchor="middle">0.02 s</text><line class="grid" x1="284.9" x2="284.9" y1="24" y2="308"/><text class="tick" x="284.9" y="326" text-anchor="middle">0.05 s</text><line class="grid" x1="380.0" x2="380.0" y1="24" y2="308"/><text class="tick" x="380.0" y="326" text-anchor="middle">0.1 s</text><line class="grid" x1="475.1" x2="475.1" y1="24" y2="308"/><text class="tick" x="475.1" y="326" text-anchor="middle">0.2 s</text><line class="grid" x1="600.9" x2="600.9" y1="24" y2="308"/><text class="tick" x="600.9" y="326" text-anchor="middle">0.5 s</text><line class="grid" x1="696.0" x2="696.0" y1="24" y2="308"/><text class="tick" x="696.0" y="326" text-anchor="middle">1 s</text><text class="axis" x="380" y="350" text-anchor="middle">game seconds per decision (latency × speed), log scale</text><text class="axis" x="16" y="166" text-anchor="middle" transform="rotate(-90 16 166)">games won</text><path class="s-auto line" d="M284.9,24.0 L309.9,24.0 L349.4,24.0 L365.5,24.0 L380.0,66.6 L393.1,123.4 L405.0,208.6 L416.0,308.0 L435.6,293.8 L460.7,308.0 L475.1,308.0 L505.7,308.0 L530.8,308.0 L570.3,308.0 L600.9,308.0 L647.1,308.0 L696.0,308.0"/><circle class="s-auto dot" cx="284.9" cy="24.0" r="4.5"><title>Autopilot: 20/20 at 0.05 s</title></circle><circle class="s-auto dot" cx="309.9" cy="24.0" r="4.5"><title>Autopilot: 20/20 at 0.06 s</title></circle><circle class="s-auto dot" cx="349.4" cy="24.0" r="4.5"><title>Autopilot: 20/20 at 0.08 s</title></circle><circle class="s-auto dot" cx="365.5" cy="24.0" r="4.5"><title>Autopilot: 20/20 at 0.09 s</title></circle><circle class="s-auto dot" cx="380.0" cy="66.6" r="4.5"><title>Autopilot: 17/20 at 0.1 s</title></circle><circle class="s-auto dot" cx="393.1" cy="123.4" r="4.5"><title>Autopilot: 13/20 at 0.11 s</title></circle><circle class="s-auto dot" cx="405.0" cy="208.6" r="4.5"><title>Autopilot: 7/20 at 0.12 s</title></circle><circle class="s-auto dot" cx="416.0" cy="308.0" r="4.5"><title>Autopilot: 0/20 at 0.13 s</title></circle><circle class="s-auto dot" cx="435.6" cy="293.8" r="4.5"><title>Autopilot: 1/20 at 0.15 s</title></circle><circle class="s-auto dot" cx="460.7" cy="308.0" r="4.5"><title>Autopilot: 0/20 at 0.18 s</title></circle><circle class="s-auto dot" cx="475.1" cy="308.0" r="4.5"><title>Autopilot: 0/20 at 0.2 s</title></circle><circle class="s-auto dot" cx="505.7" cy="308.0" r="4.5"><title>Autopilot: 0/20 at 0.25 s</title></circle><circle class="s-auto dot" cx="530.8" cy="308.0" r="4.5"><title>Autopilot: 0/20 at 0.3 s</title></circle><circle class="s-auto dot" cx="570.3" cy="308.0" r="4.5"><title>Autopilot: 0/20 at 0.4 s</title></circle><circle class="s-auto dot" cx="600.9" cy="308.0" r="4.5"><title>Autopilot: 0/20 at 0.5 s</title></circle><circle class="s-auto dot" cx="647.1" cy="308.0" r="4.5"><title>Autopilot: 0/20 at 0.7 s</title></circle><circle class="s-auto dot" cx="696.0" cy="308.0" r="4.5"><title>Autopilot: 0/20 at 1.0 s</title></circle><path class="s-jev line" d="M306.2,213.3 L353.8,213.3 L389.9,308.0 L444.4,308.0"/><circle class="s-jev dot" cx="306.2" cy="213.3" r="4.5"><title>Jev (TypeSafe): 1/3 at 0.0584 s per decision</title></circle><circle class="s-jev dot" cx="353.8" cy="213.3" r="4.5"><title>Jev (TypeSafe): 1/3 at 0.0826 s per decision</title></circle><circle class="s-jev dot" cx="389.9" cy="308.0" r="4.5"><title>Jev (TypeSafe): 0/3 at 0.1075 s per decision</title></circle><circle class="s-jev dot" cx="444.4" cy="308.0" r="4.5"><title>Jev (TypeSafe): 0/3 at 0.1599 s per decision</title></circle><path class="s-d1 line" d="M355.1,308.0 L412.2,308.0 L466.9,308.0"/><circle class="s-d1 dot" cx="355.1" cy="308.0" r="4.5"><title>Microsoft-Decision-1: 0/1 at 0.0834 s per decision</title></circle><circle class="s-d1 dot" cx="412.2" cy="308.0" r="4.5"><title>Microsoft-Decision-1: 0/3 at 0.1264 s per decision</title></circle><circle class="s-d1 dot" cx="466.9" cy="308.0" r="4.5"><title>Microsoft-Decision-1: 0/3 at 0.1883 s per decision</title></circle><path class="s-gemma line" d="M297.5,308.0 L397.4,308.0"/><circle class="s-gemma dot" cx="297.5" cy="308.0" r="4.5"><title>Gemma 4 E2B: 0/4 at 0.0548 s per decision</title></circle><circle class="s-gemma dot" cx="397.4" cy="308.0" r="4.5"><title>Gemma 4 E2B: 0/3 at 0.1135 s per decision</title></circle></svg>
+      <figcaption>The dotted grey curve is a coded autopilot forced to decide at a fixed interval (20 games per point):
+      it wins half its games at 0.115 game seconds per decision. A model point to the left of that curve that still loses
+      is losing on judgement, not speed.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>Players</h2>
+    <div class="table"><table>
+      <thead><tr><th>Player</th><th>Median latency</th><th>p90 latency</th><th>Fastest win</th>
+      <th>Best its latency allows</th><th>Games won</th><th>Decisions</th><th>Cost per decision</th><th>Total cost</th></tr></thead>
+      <tbody><tr><th scope="row"><span class="key s-jev"></span>Jev (TypeSafe)<small>System-1 decision model, cloud</small></th><td>0.49 s</td><td>0.56 s</td><td>1/3 at 15%</td><td>23.5%</td><td>2/12</td><td>5,883</td><td>$0.000019</td><td>$0.169</td></tr><tr><th scope="row"><span class="key s-d1"></span>Microsoft-Decision-1<small>System-1 decision model, cloud</small></th><td>0.58 s</td><td>0.66 s</td><td>never won</td><td>19.9%</td><td>0/7</td><td>3,428</td><td>$0.000007</td><td>$0.041</td></tr><tr><th scope="row"><span class="key s-gemma"></span>Gemma 4 E2B<small>small chat model, local GPU (RTX 3060 laptop)</small></th><td>0.21 s</td><td>0.27 s</td><td>never won</td><td>54.2%</td><td>0/7</td><td>4,927</td><td>free</td><td>free</td></tr></tbody>
+    </table></div>
+    <p class="meta">"Fastest win" is the fastest speed at which the model won any game, with its record there. No model won 2 of 3 games at any
+    speed tested. For reference, at full speed the coded autopilot won 20/20 games, holding fire won 0/20 and random play won 0/20.</p>
+    <details>
+      <summary>Every speed tested</summary>
+      <div class="table"><table>
+        <thead><tr><th>Player</th><th>Speed</th><th>Won</th><th>Aliens shot</th><th>Game s per decision</th><th>Decisions</th></tr></thead>
+        <tbody><tr><td>Jev (TypeSafe)</td><td>10%</td><td>1/3</td><td>17.0/18</td><td>0.058 s</td><td>1,881</td></tr><tr><td>Jev (TypeSafe)</td><td>15%</td><td>1/3</td><td>16.7/18</td><td>0.083 s</td><td>1,475</td></tr><tr><td>Jev (TypeSafe)</td><td>20%</td><td>0/3</td><td>14.7/18</td><td>0.107 s</td><td>1,460</td></tr><tr><td>Jev (TypeSafe)</td><td>30%</td><td>0/3</td><td>11.3/18</td><td>0.160 s</td><td>1,067</td></tr><tr><td>Microsoft-Decision-1</td><td>10%</td><td>0/1</td><td>12.0/18</td><td>0.083 s</td><td>595</td></tr><tr><td>Microsoft-Decision-1</td><td>20%</td><td>0/3</td><td>14.0/18</td><td>0.126 s</td><td>1,602</td></tr><tr><td>Microsoft-Decision-1</td><td>30%</td><td>0/3</td><td>11.7/18</td><td>0.188 s</td><td>1,231</td></tr><tr><td>Gemma 4 E2B</td><td>25%</td><td>0/4</td><td>12.0/18</td><td>0.055 s</td><td>3,615</td></tr><tr><td>Gemma 4 E2B</td><td>50%</td><td>0/3</td><td>12.0/18</td><td>0.114 s</td><td>1,312</td></tr></tbody>
+      </table></div>
+    </details>
+  </section>
+
+  <section class="method">
+    <h2>How it was measured</h2>
+    <p>The game is a small, deterministic Space Invaders: 18 aliens march sideways, drop a row at each edge, speed up as
+    they thin out and drop bombs. The cannon moves one column per action and has one shot in flight. Clearing the wave
+    wins; the aliens landing or losing three lives loses.</p>
+    <p>Each decision, the game freezes, the model gets the board as a short text description and picks one action:
+    left, right, fire or wait. The game then runs on for the model's measured latency times the game speed before the
+    action lands, so a slow model acts on a stale view, as it would in real play, while results stay reproducible. This
+    follows the latency-controlled protocol used by OmniGameArena.</p>
+    <p>Jev and Microsoft-Decision-1 are System-1 decision models: they return a probability for each fixed option in one
+    pass instead of writing text, called through OpenRouter's <code>/api/alpha/decisions</code> endpoint; the most likely action is
+    played. Gemma 4 E2B runs on the laptop's RTX 3060 through Ollama with thinking switched off and a strict JSON answer.
+    Every paid call was logged against a hard $1.90 stop.</p>
+  </section>
+
+  <section>
+    <h2>Earlier work</h2>
+    <ul class="sources">
+      <li><a href="https://github.com/13rac1/ufa-2026-09-spaceinvaders">UFA Space Invaders bake-off (Sep 2026)</a>: in real time, Claude Haiku 4.5 and a 27B Qwen scored below just holding FIRE.</li>
+      <li><a href="https://arxiv.org/abs/2408.15950">Atari-GPT</a>: multimodal models as Atari policies, acting every 8 frames, scored well below an RL agent.</li>
+      <li><a href="https://arxiv.org/abs/2506.03610">Orak</a>: every model scored 0 on hard real-time StarCraft.</li>
+      <li><a href="https://arxiv.org/abs/2505.19481">Win Fast or Lose Slow (LSB)</a>: in Street Fighter, 20% lower latency consistently beats a slower agent.</li>
+      <li><a href="https://arxiv.org/abs/2606.09826">OmniGameArena</a>: the latency-controlled real-time protocol used here.</li>
+      <li><a href="https://commandline.microsoft.com/microsoft-decision-1-model-foundry/">Microsoft-Decision-1</a> and <a href="https://openrouter.ai/~typesafe/jev-latest">Jev</a>: the decision models tested.</li>
+    </ul>
+  </section>
+</div>
