@@ -2,6 +2,18 @@
 
 How fast can a game run before a fast decision model stops winning it?
 
+| Coded autopilot: clears the wave | Microsoft-Decision-1 at 20% speed: the aliens land |
+| --- | --- |
+| ![The coded autopilot shoots the alien wave, is hit by a bomb once, and clears the wave](docs/gameplay.gif) | ![Microsoft-Decision-1 mostly waits and barely moves while the alien wave walks down, and the aliens land](docs/decision-1.gif) |
+
+*Both shown at real game speed. Left: the coded autopilot, deciding every 0.08 game seconds, takes one
+bomb hit (the cannon bursts) and clears the wave in 62 seconds. Right: a live Microsoft-Decision-1 game.
+It was played at 20% speed so it had time to think, which means the live game took five times longer
+than shown; here its moves land when they would have in game time. The bottom line shows each move it
+picks: "wait" in 378 of its 563 decisions, and only 39 moves, so the wave walked down past it.
+Regenerate with `python3 docs/make_gif.py` (add `--player decision-1 --speed 0.2`
+for a live model game, a fraction of a cent).*
+
 A small, deterministic Space Invaders where the player is a model: the System-1 decision models
 **Jev** (TypeSafe) and **Microsoft-Decision-1**, which return a probability per fixed option instead
 of writing text, and **Gemma 4 E2B** on a local laptop GPU for comparison. Each decision the game
