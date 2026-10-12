@@ -21,11 +21,13 @@ import time
 from invaders.engine import Game
 
 FRAME = 1 / 30
+POP = ("*", "✱", "✸", "✸", "·")       # the cannon bursting when a bomb lands on it
+POP_SECONDS = 1.0
 KEYS = {curses.KEY_LEFT: "left", ord("a"): "left", ord("A"): "left",
         curses.KEY_RIGHT: "right", ord("d"): "right", ord("D"): "right", ord(" "): "fire"}
 
 
-def draw(win, g: Game, title: str, status: str) -> None:
+def draw(win, g: Game, title: str, status: str, pop: str | None = None) -> None:
     win.erase()
     p = g.params
     h, w = win.getmaxyx()
@@ -44,7 +46,10 @@ def draw(win, g: Game, title: str, status: str) -> None:
             put(top + y, x, "!", curses.color_pair(2) | curses.A_BOLD)
     if g.bullet:
         put(top + g.bullet[1], g.bullet[0], "|", curses.color_pair(3) | curses.A_BOLD)
-    put(top + p.height - 1, g.x, "A", curses.color_pair(4) | curses.A_BOLD)
+    if pop:                                               # hit by a bomb: a red burst instead of the cannon
+        put(top + p.height - 1, g.x, pop, curses.color_pair(2) | curses.A_BOLD)
+    else:
+        put(top + p.height - 1, g.x, "A", curses.color_pair(4) | curses.A_BOLD)
     put(top + p.height, 0, "+" + "-" * (p.width - 2) + "+")
     put(top + p.height + 1, 0, status[: w - 1])
     win.refresh()
@@ -73,6 +78,13 @@ def run(win, args) -> None:
     title = f"LLM Invaders · {'you' if human else agent.name} · speed {args.speed:g}"
     pending: dict = {}
     paused, last, decisions, waits = False, time.monotonic(), 0, []
+    hits_seen, pop_until = 0, 0.0
+
+    def pop_frame(now: float) -> str | None:
+        if now >= pop_until:
+            return None
+        done = 1 - (pop_until - now) / POP_SECONDS
+        return POP[min(len(POP) - 1, int(done * len(POP)))]
 
     def think(view: Game) -> None:                        # a model decides on a copy of the board
         t0 = time.monotonic()
@@ -93,7 +105,9 @@ def run(win, args) -> None:
                 g.act(KEYS[key])
             key = win.getch()
         now = time.monotonic()
-        if not paused:
+        if g.hits_taken > hits_seen:                      # a bomb landed on the cannon: burst, game holds
+            hits_seen, pop_until = g.hits_taken, now + POP_SECONDS
+        if not paused and now >= pop_until:
             g.advance((now - last) * args.speed)
             if agent is not None:
                 if "action" in pending:                   # the answer arrived: its move lands now
@@ -112,9 +126,15 @@ def run(win, args) -> None:
             status = f"{decisions} decisions · {avg:.2f}s per decision · P pause · Q quit" + ("   PAUSED" if paused else "")
             if "error" in pending:
                 status = f"model stopped: {pending['error']}"
-        draw(win, g, title, status)
+        draw(win, g, title, status, pop_frame(now))
         time.sleep(FRAME)
-    draw(win, g, title, f"{'YOU WIN' if g.won else 'GAME OVER'}: {g.reason}. Press any key.")
+    end = f"{'YOU WIN' if g.won else 'GAME OVER'}: {g.reason}. Press any key."
+    if g.hits_taken > hits_seen:                          # the last life: let the burst play out first
+        pop_until = time.monotonic() + POP_SECONDS
+        while time.monotonic() < pop_until:
+            draw(win, g, title, "Hit!", pop_frame(time.monotonic()))
+            time.sleep(FRAME)
+    draw(win, g, title, end)
     win.nodelay(False)
     win.getch()
 

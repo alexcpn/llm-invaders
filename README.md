@@ -9,6 +9,24 @@ freezes, the model picks one action (left, right, fire, wait), and the game then
 model's real latency times the game speed before the action lands. Sweeping the game speed gives
 each model's speed limit.
 
+## Why this game
+
+Robots, autonomous cars and trading systems all need decisions that land before the world moves on:
+a robot arm catching a falling object, a car braking for a child, a trade placed before the other side
+reacts. A brilliant answer that arrives late is a wrong answer. Today's language models are judged on
+how deeply they think; this experiment asks whether **speed of thought matters as much as depth of
+thought**. Space Invaders makes the trade-off measurable: every decision has a deadline, and the speed
+dial turns the model's thinking time into game time.
+
+The answer from these runs: **both matter, and speed comes first.** Latency sets a hard ceiling that no
+amount of judgement gets past: a perfect coded player wins almost nothing once its decisions are more than
+0.13 game seconds apart, so at Jev's 0.49 s per decision nothing wins above about a quarter of full
+speed. Inside that ceiling, judgement decides: Gemma 4 E2B thought more than twice as fast as Jev but
+won nothing because it only ever fired, and Microsoft-Decision-1, about as fast as Jev, won nothing
+because it mostly waited. Only Jev, the fast model with the best judgement, won games. Speed is
+necessary but not sufficient, which is why robots split the work: a slow model thinks deeply about
+goals while a small fast policy acts every few milliseconds.
+
 The report with the results and timings is `report.html` (published as an artifact); the raw data is
 in `results.jsonl`, `ceiling.json`, `summary.json` and `cost-ledger.json`.
 
