@@ -2,6 +2,23 @@
 
 How fast can a game run before a fast decision model stops winning it?
 
+**TL;DR**
+
+- **Why:** robots, self-driving cars and trading systems need decisions that land before the world, or
+  the opponent, moves on. Language models are judged on how deeply they think; does speed of thought
+  matter as much as depth of thought?
+- **Setup:** a small Space Invaders played by two System-1 decision models, Jev and
+  Microsoft-Decision-1, plus a local Gemma 4 E2B. The game freezes for each decision and then charges
+  the model its real latency in game time, so a slow model acts on a stale view.
+- **Result:** no model came close to arcade speed. Jev won 1 game in 3 at 10% and at 15% of full speed
+  and none faster; Microsoft-Decision-1 and Gemma never won.
+- **Why they lost:** speed caps play: even a perfect coded player needs a decision every 0.115 game
+  seconds, so at 0.49-0.58 s per decision the game cannot run faster than about 20-23% of full speed.
+  Inside that cap judgement decides: on 200 game situations Jev chose a sound move 77% of the time,
+  Microsoft-Decision-1 28% (it mostly waits) and Gemma 25% (it always fires).
+- **Answer:** both matter, and speed comes first: speed is necessary but not sufficient. The whole
+  experiment cost $0.22.
+
 | Coded autopilot: clears the wave | Microsoft-Decision-1 at 20% speed: the aliens land |
 | --- | --- |
 | ![The coded autopilot shoots the alien wave, is hit by a bomb once, and clears the wave](docs/gameplay.gif) | ![Microsoft-Decision-1 mostly waits and barely moves while the alien wave walks down, and the aliens land](docs/decision-1.gif) |
@@ -13,13 +30,6 @@ than shown; here its moves land when they would have in game time. The bottom li
 picks: "wait" in 378 of its 563 decisions, and only 39 moves, so the wave walked down past it.
 Regenerate with `python3 docs/make_gif.py` (add `--player decision-1 --speed 0.2`
 for a live model game, a fraction of a cent).*
-
-A small, deterministic Space Invaders where the player is a model: the System-1 decision models
-**Jev** (TypeSafe) and **Microsoft-Decision-1**, which return a probability per fixed option instead
-of writing text, and **Gemma 4 E2B** on a local laptop GPU for comparison. Each decision the game
-freezes, the model picks one action (left, right, fire, wait), and the game then runs on for the
-model's real latency times the game speed before the action lands. Sweeping the game speed gives
-each model's speed limit.
 
 ## Why this game
 
@@ -38,6 +48,13 @@ won nothing because it only ever fired, and Microsoft-Decision-1, about as fast 
 because it mostly waited. Only Jev, the fast model with the best judgement, won games. Speed is
 necessary but not sufficient, which is why robots split the work: a slow model thinks deeply about
 goals while a small fast policy acts every few milliseconds.
+
+A small, deterministic Space Invaders where the player is a model: the System-1 decision models
+**Jev** (TypeSafe) and **Microsoft-Decision-1**, which return a probability per fixed option instead
+of writing text, and **Gemma 4 E2B** on a local laptop GPU for comparison. Each decision the game
+freezes, the model picks one action (left, right, fire, wait), and the game then runs on for the
+model's real latency times the game speed before the action lands. Sweeping the game speed gives
+each model's speed limit.
 
 The report with the results and timings is `report.html` (published as an artifact); the raw data is
 in `results.jsonl`, `ceiling.json`, `summary.json` and `cost-ledger.json`.
